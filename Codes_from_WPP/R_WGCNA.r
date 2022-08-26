@@ -165,8 +165,8 @@ dev.off()
 MEs_col = MEs
 #colnames(MEs_col) = paste0("ME", labels2colors(as.numeric(str_replace_all(colnames(MEs),"ME",""))))
 MEs_col = orderMEs(MEs_col)
-# 根据基因间表达量进行聚类所得到的各模块间的相关性图
-# marDendro/marHeatmap 设置下、左、上、右的边距
+# correlation among modules according to gene expression
+# marDendro/marHeatmap
 pdf('Correlation_among_AS_exp1_overlapping_with_XX_met_WGCNA_modules_median_MEDissThres_0.1.pdf')
 plotEigengeneNetworks(MEs_col, "Eigengene adjacency heatmap", 
                       marDendro = c(3,3,2,4),
@@ -176,13 +176,12 @@ dev.off()
 #########################
 # associate the expression modules with traits
 trait <- "Metabolites_matrix_XX_exp1_overlapping_with_AS_expression_median.txt"
-# 读入表型数据，不是必须的
 traitData <- read.table(file=trait, sep='\t', header=T, row.names=1,
                           check.names=FALSE, comment='',quote="")
 colnames(traitData) <- rownames(dataExpr)						
 traitData <- t(traitData)
 
-### 模块与表型数据关联
+### association between modules and phenotype data 
 nSamples <- nrow(dataExpr)
 if (corType=="pearson") {
   modTraitCor = cor(MEs_col, traitData, use = "p")
@@ -197,7 +196,7 @@ if (corType=="pearson") {
 ## Pearson correlation was used for individual columns with zero (or missing)
 ## MAD.
 
-# signif表示保留几位小数
+# signif
 textMatrix = paste(signif(modTraitCor, 2), "\n(", signif(modTraitP, 1), ")", sep = "")
 dim(textMatrix) = dim(modTraitCor)
 pdf('Correlation_between_XX_exp1_metabolites_and_WGCNA_modules_median_MEDissThres_0.1.pdf')
@@ -224,12 +223,12 @@ dataExprVar <- dat
 type = "unsigned"
 corType = "pearson"
 corFnc = ifelse(corType=="pearson", cor, bicor)
-# filter genes with small variation across samples. 筛选中位绝对偏差前75%的基因，至少MAD大于0.01
+# filter genes with small variation across samples
 #m.mad <- apply(dataExpr,1,mad)
 #dataExprVar <- dataExpr[which(m.mad > max(quantile(m.mad, probs=seq(0, 1, 0.25))[2],0.01)),]
 dataExpr <- as.data.frame(t(dataExprVar))
 # soft threshold
-## 查看是否有离群样品
+## 
 sampleTree = hclust(dist(dataExpr), method = "average")
 plot(sampleTree, main = "Sample clustering to detect outliers", sub="", xlab="")
 powers = c(c(1:10), seq(from = 12, to=70, by=2))
@@ -238,7 +237,7 @@ sft = pickSoftThreshold(dataExpr, powerVector=powers, networkType=type, verbose=
 pdf('Metabolites_XX_Exp1_overlapping_with_AS_expression_soft.pdf')
 par(mfrow = c(2,1))
 cex1 = 0.9
-# 横轴是Soft threshold (power)，纵轴是无标度网络的评估参数，数值越高，网络越符合无标度特征 (non-scale)
+# 
 plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
      xlab="Soft Threshold (power)",
      ylab="Scale Free Topology Model Fit,signed R^2",type="n",
@@ -252,7 +251,7 @@ plot(sft$fitIndices[,1], sft$fitIndices[,5],
 xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
 main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
-# 筛选标准。R-square=0.85
+#
 dev.off()
 
 # build network
@@ -381,8 +380,7 @@ dev.off()
 MEs_col = MEs
 #colnames(MEs_col) = paste0("ME", labels2colors(as.numeric(str_replace_all(colnames(MEs),"ME",""))))
 MEs_col = orderMEs(MEs_col)
-# 根据基因间表达量进行聚类所得到的各模块间的相关性图
-# marDendro/marHeatmap 设置下、左、上、右的边距
+# marDendro/marHeatmap 
 pdf('Correlation_among_AS_exp1_overlapping_with_XX_met_WGCNA_modules_median_MEDissThres_0.1.pdf')
 plotEigengeneNetworks(MEs_col, "Eigengene adjacency heatmap", 
                       marDendro = c(3,3,2,4),
